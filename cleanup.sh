@@ -94,11 +94,23 @@ cat >/tmp/retainer.list <<EOR
 EOR
 
 export retain=$(sed 's/\,/ /g;s/\s\s/ /g;s/-/_/g' <<<"${retain,,}")
+export remove=$(sed 's/\,/ /g;s/\s\s/ /g;s/-/_/g' <<<"${remove,,}")
+
+[ -n "$retain" ] && [ -n "$retain" ] && echo -e '[!] Warning: Both "retain" and "remove" args are not empty. The retain list will have higher priority.'
+
+# Do the same thing as processing the retain list
+for i in ${remove}; do
+  if ! awk '{print $NF}' /tmp/retainer.list | sort -u | grep -q "^${i}$"; then
+    echo -e "[!] Invalid Input in Remove List: ${i}, Ignoring..." && continue
+  fi
+  export retain_${i}="false" && echo -e "[i] Removing: ${i}"
+done
 
 # Check if the values provided are correct or not
+# Retain list has higher priority
 for i in ${retain}; do
   if ! awk '{print $NF}' /tmp/retainer.list | sort -u | grep -q "^${i}$"; then
-    echo -e "[!] Invalid Input: ${i}, Ignoring..." && continue
+    echo -e "[!] Invalid Input in Retain List: ${i}, Ignoring..." && continue
   fi
   export retain_${i}="true" && echo -e "[i] Retaining: ${i}"
 done
