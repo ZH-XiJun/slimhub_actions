@@ -5,6 +5,9 @@ inputs:
   retain:
     description: "Comma/Space-separated Values of Apps to Keep"
     default: ""
+  remove: 
+    description: "Comma/Space-separated Values of Apps to Remove"
+    default: ""
 branding:
   icon: 'layers'
   color: 'green'
@@ -18,3 +21,4 @@ runs:
         bash $GITHUB_ACTION_PATH/cleanup.sh
       env:
         retain: "${{ inputs.retain }}"
+        remove: "${{ inputs.remove }}"
